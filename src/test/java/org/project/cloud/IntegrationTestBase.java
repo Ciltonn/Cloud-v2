@@ -32,7 +32,9 @@ public abstract class IntegrationTestBase {
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.datasource.url", () -> postgreSQLContainer.getJdbcUrl());
-        registry.add("spring.liquibase.enabled", () -> "false");
+        registry.add("spring.datasource.username", () -> postgreSQLContainer.getUsername());
+        registry.add("spring.datasource.password", () -> postgreSQLContainer.getPassword());
+        registry.add("spring.liquibase.enabled", () -> "true");
         registry.add("spring.data.redis.host", redis::getHost);
         registry.add("spring.data.redis.port", () -> redis.getMappedPort(6379));
     }
