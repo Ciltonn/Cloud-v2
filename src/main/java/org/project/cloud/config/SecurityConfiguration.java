@@ -22,7 +22,25 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) {
         httpSecurity
                 .authorizeHttpRequests(authz -> authz
+                        .requestMatchers("/", "/index.html", "/assets/**", "/favicon.ico").permitAll()
                         .requestMatchers("/api/auth/sign-in", "/api/auth/sign-up").permitAll()
+                        .requestMatchers(
+                                "/",
+                                "/index.html",
+                                "/config.js",
+                                "/favicon.ico",
+                                "/assets/**",
+                                "/static/**",
+                                "/*.js",
+                                "/*.css",
+                                "/*.png",
+                                "/*.svg",
+                                "/*.ico",
+                                "/*.json",
+                                "/*.woff",
+                                "/*.woff2",
+                                "/*.ttf"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form.disable())
