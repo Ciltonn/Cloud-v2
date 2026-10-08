@@ -42,7 +42,7 @@ public class AuthController {
         User user = userService.register(userDtoRequest);
         Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        userDtoRequest.getUserName(),
+                        userDtoRequest.getUsername(),
                         userDtoRequest.getPassword()
                 ));
         SecurityContext context = SecurityContextHolder.createEmptyContext();
@@ -52,7 +52,7 @@ public class AuthController {
                 HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
                 context
         );
-        return ResponseEntity.status(HttpStatus.CREATED).body(new UserDtoResponse(user.getUserName()));
+        return ResponseEntity.status(HttpStatus.CREATED).body(new UserDtoResponse(user.getUsername()));
     }
 
     @PostMapping("/sign-in")
@@ -60,11 +60,11 @@ public class AuthController {
                                                   HttpServletRequest httpServletRequest) {
         Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        userDtoRequest.getUserName(),
+                        userDtoRequest.getUsername(),
                         userDtoRequest.getPassword()
                 ));
         saveSession(httpServletRequest, auth);
-        return ResponseEntity.ok(new UserDtoResponse(userDtoRequest.getUserName()));
+        return ResponseEntity.ok(new UserDtoResponse(userDtoRequest.getUsername()));
     }
 
         @PostMapping("/sign-out")

@@ -45,7 +45,7 @@ class AuthControllerTestIT extends IntegrationTestBase {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.userName").value("test"))
                 .andExpect(cookie().exists("SESSION"));
-        assertThat(userRepository.existsByUserName("test")).isTrue();
+        assertThat(userRepository.existsByUsername("test")).isTrue();
     }
 
     @Test
@@ -57,7 +57,7 @@ class AuthControllerTestIT extends IntegrationTestBase {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());
 
-        assertThat(userRepository.existsByUserName("test2")).isFalse();
+        assertThat(userRepository.existsByUsername("test2")).isFalse();
     }
 
     @Test
@@ -68,7 +68,7 @@ class AuthControllerTestIT extends IntegrationTestBase {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.userName").value("test"))
+                .andExpect(jsonPath("$.username").value("test"))
                 .andExpect(cookie().exists("SESSION"));
 
         UserDtoRequest requestDuplicate = new UserDtoRequest("test", "password");
@@ -76,7 +76,7 @@ class AuthControllerTestIT extends IntegrationTestBase {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDuplicate)))
                 .andExpect(status().isConflict());
-        assertThat(userRepository.existsByUserName("test")).isTrue();
+        assertThat(userRepository.existsByUsername("test")).isTrue();
     }
 
     @Test
@@ -87,9 +87,9 @@ class AuthControllerTestIT extends IntegrationTestBase {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.userName").value("test"))
+                .andExpect(jsonPath("$.username").value("test"))
                 .andExpect(cookie().exists("SESSION"));
-        assertThat(userRepository.existsByUserName("test")).isTrue();
+        assertThat(userRepository.existsByUsername("test")).isTrue();
         UserDtoRequest request1 = new UserDtoRequest("test", "password");
         mockMvc.perform(post("/api/auth/sign-in")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -108,9 +108,9 @@ class AuthControllerTestIT extends IntegrationTestBase {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.userName").value("test"))
+                .andExpect(jsonPath("$.username").value("test"))
                 .andExpect(cookie().exists("SESSION"));
-        assertThat(userRepository.existsByUserName("test")).isTrue();
+        assertThat(userRepository.existsByUsername("test")).isTrue();
         UserDtoRequest request1 = new UserDtoRequest("test", "123");
         mockMvc.perform(post("/api/auth/sign-in")
                         .contentType(MediaType.APPLICATION_JSON)

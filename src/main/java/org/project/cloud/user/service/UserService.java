@@ -28,11 +28,11 @@ public class UserService implements UserDetailsService {
     }
     @Transactional
     public User register(UserDtoRequest userDto) {
-        log.info("Registering new user: {}", userDto.getUserName());
-        if(userRepository.existsByUserName(userDto.getUserName())) {
+        log.info("Registering new user: {}", userDto.getUsername());
+        if(userRepository.existsByUsername(userDto.getUsername())) {
             throw new ConflictException("User already exists");
         }
-        User user = new User(userDto.getUserName(),
+        User user = new User(userDto.getUsername(),
                 encoder.encode(userDto.getPassword()),
                 RoleUser.USER
         );
@@ -43,16 +43,16 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
-        return userRepository.findByUserName(userName)
+        return userRepository.findByUsername(userName)
                 .map(user -> builder()
-                .username(user.getUserName())
+                .username(user.getUsername())
                 .password(user.getHashPassword())
                 .authorities(user.getRole().getAuthority())
                 .build())
         .orElseThrow(()-> new UsernameNotFoundException("User not found"));
            }
     public User findByEmail(String userName) {
-        return userRepository.findByUserName(userName)
+        return userRepository.findByUsername(userName)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + userName));
     }
 

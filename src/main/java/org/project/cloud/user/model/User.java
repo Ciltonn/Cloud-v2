@@ -21,7 +21,7 @@ public class User {
 
     @NotBlank(message = "Email should not be empty")
     @Column(name = "user_name", unique = true, nullable = false, length = 20)
-    private String userName;
+    private String username;
 
     @NotBlank(message = "Password should not be empty")
     @Column(name = "hash_password", nullable = false, length = 255)
@@ -33,7 +33,7 @@ public class User {
     private RoleUser role;
 
     public User(String userName, String hashPassword, RoleUser role) {
-        this.userName = userName;
+        this.username = userName;
         this.hashPassword = hashPassword;
         this.role = role;
     }

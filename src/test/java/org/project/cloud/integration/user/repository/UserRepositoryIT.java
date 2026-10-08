@@ -28,7 +28,7 @@ class UserRepositoryIT extends IntegrationTestBase {
         User saved = userRepository.save(user);
 
         assertThat(saved.getId()).isNotNull();
-        assertThat(saved.getUserName()).isEqualTo("testUser");
+        assertThat(saved.getUsername()).isEqualTo("testUser");
     }
 
     @Test
@@ -45,17 +45,17 @@ class UserRepositoryIT extends IntegrationTestBase {
     void findByUserName() {
         User user = new User(null, "testUser", "testPassword", RoleUser.USER);
         User saved = userRepository.save(user);
-        Optional<User> found = userRepository.findByUserName("testUser");
+        Optional<User> found = userRepository.findByUsername("testUser");
 
         assertThat(found).isPresent();
-        assertThat(found.get().getUserName()).isEqualTo(saved.getUserName());
+        assertThat(found.get().getUsername()).isEqualTo(saved.getUsername());
     }
 
     @Test
     void existsByUserName() {
         User user = new User(null, "testUser", "testPassword", RoleUser.USER);
         userRepository.save(user);
-        boolean exists = userRepository.existsByUserName("testUser");
+        boolean exists = userRepository.existsByUsername("testUser");
         assertThat(exists).isTrue();
     }
 }
