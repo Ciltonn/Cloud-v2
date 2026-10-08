@@ -24,17 +24,17 @@ class UserRepositoryIT extends IntegrationTestBase {
 
     @Test
     void saveUser() {
-        User user = new User(null, "testEmail@test", "testPassword", RoleUser.USER);
+        User user = new User(null, "testUser", "testPassword", RoleUser.USER);
         User saved = userRepository.save(user);
 
         assertThat(saved.getId()).isNotNull();
-        assertThat(saved.getEmail()).isEqualTo("testEmail@test");
+        assertThat(saved.getUserName()).isEqualTo("testUser");
     }
 
     @Test
     void saveUserDuplicate() {
-        User user = new User(null, "testEmail@test", "testPassword", RoleUser.USER);
-        User userDuplicate = new User(null, "testEmail@test", "testPassword", RoleUser.USER);
+        User user = new User(null, "testUser", "testPassword", RoleUser.USER);
+        User userDuplicate = new User(null, "testUser", "testPassword", RoleUser.USER);
         User saved = userRepository.save(user);
 
         assertThat(saved.getId()).isNotNull();
@@ -42,20 +42,20 @@ class UserRepositoryIT extends IntegrationTestBase {
     }
 
     @Test
-    void findByEmail() {
-        User user = new User(null, "testEmail@test", "testPassword", RoleUser.USER);
+    void findByUserName() {
+        User user = new User(null, "testUser", "testPassword", RoleUser.USER);
         User saved = userRepository.save(user);
-        Optional<User> found = userRepository.findByEmail("testEmail@test");
+        Optional<User> found = userRepository.findByUserName("testUser");
 
         assertThat(found).isPresent();
-        assertThat(found.get().getEmail()).isEqualTo(saved.getEmail());
+        assertThat(found.get().getUserName()).isEqualTo(saved.getUserName());
     }
 
     @Test
-    void existsByEmail() {
-        User user = new User(null, "testEmail@test", "testPassword", RoleUser.USER);
+    void existsByUserName() {
+        User user = new User(null, "testUser", "testPassword", RoleUser.USER);
         userRepository.save(user);
-        boolean exists = userRepository.existsByEmail("testEmail@test");
+        boolean exists = userRepository.existsByUserName("testUser");
         assertThat(exists).isTrue();
     }
 }

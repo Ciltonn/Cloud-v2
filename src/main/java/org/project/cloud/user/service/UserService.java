@@ -28,11 +28,11 @@ public class UserService implements UserDetailsService {
     }
     @Transactional
     public User register(UserDtoRequest userDto) {
-        log.info("Registering new user: {}", userDto.getEmail());
-        if(userRepository.existsByEmail(userDto.getEmail())) {
+        log.info("Registering new user: {}", userDto.getUserName());
+        if(userRepository.existsByUserName(userDto.getUserName())) {
             throw new ConflictException("User already exists");
         }
-        User user = new User(userDto.getEmail(),
+        User user = new User(userDto.getUserName(),
                 encoder.encode(userDto.getPassword()),
                 RoleUser.USER
         );
@@ -42,18 +42,18 @@ public class UserService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return userRepository.findByEmail(email)
+    public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
+        return userRepository.findByUserName(userName)
                 .map(user -> builder()
-                .username(user.getEmail())
+                .username(user.getUserName())
                 .password(user.getHashPassword())
                 .authorities(user.getRole().getAuthority())
                 .build())
         .orElseThrow(()-> new UsernameNotFoundException("User not found"));
            }
-    public User findByEmail(String email) {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
+    public User findByEmail(String userName) {
+        return userRepository.findByUserName(userName)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + userName));
     }
 
     public User findById(Long id) {

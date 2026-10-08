@@ -10,9 +10,8 @@ import lombok.*;
 @Getter
 @Setter
 public class UserDtoRequest {
-    @Email
     @NotBlank(message = "Username should not be empty")
-    private String email;
+    private String userName;
 
     @NotBlank(message = "Password should not be empty")
     @Size(min = 3, max = 8, message = "Password must be between 3 and 20 characters")

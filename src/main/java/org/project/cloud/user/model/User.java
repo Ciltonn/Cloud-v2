@@ -20,9 +20,8 @@ public class User {
     private Long id;
 
     @NotBlank(message = "Email should not be empty")
-    @Email(message = "Email should be valid")
-    @Column(name = "email", unique = true, nullable = false, length = 20)
-    private String email;
+    @Column(name = "user_name", unique = true, nullable = false, length = 20)
+    private String userName;
 
     @NotBlank(message = "Password should not be empty")
     @Column(name = "hash_password", nullable = false, length = 255)
@@ -34,7 +33,7 @@ public class User {
     private RoleUser role;
 
     public User(String userName, String hashPassword, RoleUser role) {
-        this.email = userName;
+        this.userName = userName;
         this.hashPassword = hashPassword;
         this.role = role;
     }
