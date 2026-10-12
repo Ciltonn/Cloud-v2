@@ -1,5 +1,6 @@
 package org.project.cloud.user.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.project.cloud.user.model.dto.UserDtoResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
+    @Operation(summary = "Текущий пользователь")
 @GetMapping("/me")
     public ResponseEntity<UserDtoResponse> getCurrentUser(Authentication authentication) {
     return ResponseEntity.ok(new UserDtoResponse(authentication.getName()));
