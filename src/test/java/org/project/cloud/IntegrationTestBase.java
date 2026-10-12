@@ -24,26 +24,25 @@ public abstract class IntegrationTestBase {
     static GenericContainer<?> redis = new GenericContainer<>(DockerImageName.parse("redis:7-alpine"))
             .withExposedPorts(6379);
 
-    static {
-        postgreSQLContainer.start();
-        redis.start();
-    }
-
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
+        if (!postgreSQLContainer.isRunning()) postgreSQLContainer.start();
+        if (!redis.isRunning()) redis.start();
+
         registry.add("spring.datasource.url", () -> postgreSQLContainer.getJdbcUrl());
         registry.add("spring.datasource.username", () -> postgreSQLContainer.getUsername());
         registry.add("spring.datasource.password", () -> postgreSQLContainer.getPassword());
         registry.add("spring.liquibase.enabled", () -> "true");
         registry.add("spring.data.redis.host", redis::getHost);
         registry.add("spring.data.redis.port", () -> redis.getMappedPort(6379));
+        registry.add("minio.bucket-name", () -> "user-files");
     }
 
-    @Autowired
-    private RedisConnectionFactory redisConnectionFactory;
+        @Autowired
+        private RedisConnectionFactory redisConnectionFactory;
 
-    @BeforeEach
-    void cleanRedis() {
-        redisConnectionFactory.getConnection().serverCommands().flushAll();
+        @BeforeEach
+        void cleanRedis () {
+            redisConnectionFactory.getConnection().serverCommands().flushAll();
+        }
     }
-}
