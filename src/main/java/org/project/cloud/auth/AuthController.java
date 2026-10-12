@@ -1,5 +1,8 @@
 package org.project.cloud.auth;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -35,7 +38,13 @@ public class AuthController {
         this.authenticationManager = authenticationManager;
         this.userService = userService;
     }
-
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Пользователь найден"),
+            @ApiResponse(responseCode = "400", description = "Невалидный или отсутствующий путь"),
+            @ApiResponse(responseCode = "409", description = "Имя пользователя занято"),
+            @ApiResponse(responseCode = "500", description = "Неизвестная ошибка")
+    })
+    @Operation(summary = "Регистрация пользователя")
     @PostMapping("/sign-up")
     public ResponseEntity<UserDtoResponse> signUp(@RequestBody @Valid UserDtoRequest userDtoRequest,
                                                   HttpServletRequest httpServletRequest) {
@@ -54,7 +63,7 @@ public class AuthController {
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(new UserDtoResponse(user.getUsername()));
     }
-
+    @Operation(summary = "Авторизация пользователя")
     @PostMapping("/sign-in")
     public ResponseEntity<UserDtoResponse> signIn(@RequestBody @Valid UserDtoRequest userDtoRequest,
                                                   HttpServletRequest httpServletRequest) {
@@ -66,7 +75,7 @@ public class AuthController {
         saveSession(httpServletRequest, auth);
         return ResponseEntity.ok(new UserDtoResponse(userDtoRequest.getUsername()));
     }
-
+    @Operation(summary = "Выход из аккаунта")
         @PostMapping("/sign-out")
         public ResponseEntity<Void> signOut (HttpServletRequest httpServletRequest){
             HttpSession session = httpServletRequest.getSession(false);
