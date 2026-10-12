@@ -1,0 +1,50 @@
+spring:
+  application:
+    name: Cloud
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5433/postgres}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    hikari:
+      maximum-pool-size: 8
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  session:
+    store-type: redis
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+servlet:
+  multipart:
+      max-file-size: 50MB
+      max-request-size: 100MB
+logging:
+  level:
+    root: info
+    org.project.cloud: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE
+    org.springframework.data: DEBUG
+  file:
+    name: logs/application.log
+    path: ./logs
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+server:
+  port: 8080
+minio:
+  endpoint: http://localhost:9000
+  access-key: ${MINIO_ROOT_USER:minioadmin}
+  secret-key: ${MINIO_ROOT_PASSWORD:minioadmin}
+  bucket-name: user-files
