@@ -43,7 +43,7 @@ class AuthControllerTestIT extends IntegrationTestBase {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.userName").value("test"))
+                .andExpect(jsonPath("$.username").value("test"))
                 .andExpect(cookie().exists("SESSION"));
         assertThat(userRepository.existsByUsername("test")).isTrue();
     }
@@ -95,7 +95,7 @@ class AuthControllerTestIT extends IntegrationTestBase {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request1)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.userName").value("test"))
+                .andExpect(jsonPath("$.username").value("test"))
                 .andExpect(cookie().exists("SESSION"));
 
     }
