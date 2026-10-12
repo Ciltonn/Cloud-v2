@@ -5,7 +5,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.project.cloud.file.model.FileType;
+import org.project.cloud.file.model.Type;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Getter
@@ -14,11 +14,11 @@ public class FileDtoResponse {
     private String path;
     private String name;
     private Long size;
-    private FileType fileType;
+    private Type type;
 
-    public FileDtoResponse(String path, String name, FileType fileType) {
+    public FileDtoResponse(String path, String name, Type type) {
         this.path = path;
         this.name = name;
-        this.fileType = fileType;
+        this.type = type;
     }
 }
