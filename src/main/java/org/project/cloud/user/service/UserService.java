@@ -21,22 +21,24 @@ import static org.springframework.security.core.userdetails.User.builder;
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final PasswordEncoder encoder;
+
     @Autowired
     public UserService(UserRepository userRepository, PasswordEncoder encoder) {
         this.userRepository = userRepository;
         this.encoder = encoder;
     }
+
     @Transactional
     public User register(UserDtoRequest userDto) {
         log.info("Registering new user: {}", userDto.getUsername());
-        if(userRepository.existsByUsername(userDto.getUsername())) {
+        if (userRepository.existsByUsername(userDto.getUsername())) {
             throw new ConflictException("User already exists");
         }
         User user = new User(userDto.getUsername(),
                 encoder.encode(userDto.getPassword()),
                 RoleUser.USER
         );
-        User saved= userRepository.save(user);
+        User saved = userRepository.save(user);
         log.info("Registering user with: {}", saved.getId());
         return saved;
     }
@@ -45,15 +47,16 @@ public class UserService implements UserDetailsService {
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
         return userRepository.findByUsername(userName)
                 .map(user -> builder()
-                .username(user.getUsername())
-                .password(user.getHashPassword())
-                .authorities(user.getRole().getAuthority())
-                .build())
-        .orElseThrow(()-> new UsernameNotFoundException("User not found"));
-           }
-    public User findByEmail(String userName) {
-        return userRepository.findByUsername(userName)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + userName));
+                        .username(user.getUsername())
+                        .password(user.getHashPassword())
+                        .authorities(user.getRole().getAuthority())
+                        .build())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
+
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
     }
 
     public User findById(Long id) {
