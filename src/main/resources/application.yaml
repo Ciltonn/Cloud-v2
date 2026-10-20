@@ -24,10 +24,10 @@ spring:
     store-type: redis
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
-servlet:
-  multipart:
-      max-file-size: 50MB
-      max-request-size: 100MB
+  servlet:
+    multipart:
+        max-file-size: 50MB
+        max-request-size: 100MB
 logging:
   level:
     root: info
