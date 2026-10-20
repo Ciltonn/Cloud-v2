@@ -1,5 +1,7 @@
 package org.project.cloud.user.service;
 
+import io.minio.MinioClient;
+import io.minio.PutObjectArgs;
 import lombok.extern.slf4j.Slf4j;
 import org.project.cloud.exception.ConflictException;
 import org.project.cloud.user.model.RoleUser;
@@ -7,12 +9,16 @@ import org.project.cloud.user.model.User;
 import org.project.cloud.user.model.dto.UserDtoRequest;
 import org.project.cloud.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.io.ByteArrayInputStream;
 
 import static org.springframework.security.core.userdetails.User.builder;
 
@@ -21,12 +27,16 @@ import static org.springframework.security.core.userdetails.User.builder;
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final PasswordEncoder encoder;
+    private final MinioClient minioClient;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder encoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder encoder, MinioClient minioClient) {
         this.userRepository = userRepository;
         this.encoder = encoder;
+        this.minioClient = minioClient;
     }
+    @Value("${minio.bucket-name}")
+    private String bucketName;
 
     @Transactional
     public User register(UserDtoRequest userDto) {
@@ -38,9 +48,24 @@ public class UserService implements UserDetailsService {
                 encoder.encode(userDto.getPassword()),
                 RoleUser.USER
         );
-        User saved = userRepository.save(user);
-        log.info("Registering user with: {}", saved.getId());
-        return saved;
+        try {
+            User saved = userRepository.save(user);
+            try {
+                minioClient.putObject(
+                        PutObjectArgs.builder()
+                                .bucket(bucketName)
+                                .object("user-" + saved.getId() + "-files/")
+                                .stream(new ByteArrayInputStream(new byte[0]), 0, -1)
+                                .build()
+                );
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to create user root", e);
+            }
+            log.info("Registering user with: {}", saved.getId());
+            return saved;
+        }catch (DataIntegrityViolationException e) {
+            throw new ConflictException("User already exists");
+        }
     }
 
     @Override
