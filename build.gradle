@@ -8,12 +8,6 @@ group = 'org.project'
 version = '0.0.1-SNAPSHOT'
 description = 'Cloud'
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(22)
-    }
-}
-
 repositories {
     mavenCentral()
 }
@@ -50,4 +44,8 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
