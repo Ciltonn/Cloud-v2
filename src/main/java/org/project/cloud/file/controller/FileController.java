@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.project.cloud.file.model.dto.FileDtoResponse;
 import org.project.cloud.file.service.FileService;
+import org.project.cloud.file.util.StoragePaths;
 import org.project.cloud.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -17,6 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
+
 import java.util.List;
 
 @Tag(name = "Files", description = "Работа с файлами")
@@ -29,9 +31,10 @@ public class FileController {
     private final FileService fileService;
 
     @Autowired
-    public FileController(FileService fileService, UserService userService) {
-        this.fileService = fileService;
+    public FileController(UserService userService, FileService fileService) {
         this.userService = userService;
+        this.fileService = fileService;
+
     }
 
     @ApiResponses({
@@ -48,6 +51,7 @@ public class FileController {
         Long userId = userService.findByUsername(authentication.getName()).getId();
         return ResponseEntity.ok(fileService.info(userId, path));
     }
+
     @Operation(summary = "Удалить ресурс")
     @DeleteMapping
     public ResponseEntity<Void> deleteResource(@RequestParam String path,
@@ -56,23 +60,23 @@ public class FileController {
         fileService.delete(userId, path);
         return ResponseEntity.noContent().build();
     }
+
     @Operation(summary = "Скачать ресурс")
     @GetMapping("/download")
     public ResponseEntity<StreamingResponseBody> downloadResource(@RequestParam String path,
                                                                   Authentication authentication) {
         Long userId = userService.findByUsername(authentication.getName()).getId();
-        boolean isDirectory = fileService.isDirectory(path);
-        String filename = fileService.extractName(path) + (isDirectory ? ".zip" : "");
+        boolean isDirectory = StoragePaths.isDirectory(path);
+        String filename = StoragePaths.extractName(path) + (isDirectory ? ".zip" : "");
         StreamingResponseBody body = outputStream ->
-        fileService.download(userId, path, outputStream);
+                fileService.download(userId, path, outputStream);
         return ResponseEntity.ok()
-                .contentType(isDirectory
-                        ? MediaType.parseMediaType("application/zip")
-                        : MediaType.APPLICATION_OCTET_STREAM)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename= \"" + filename + "\"")
+                        "attachment; filename=\"" + filename + "\"")
                 .body(body);
     }
+
     @Operation(summary = "Загрузить ресурс")
     @PostMapping
     public ResponseEntity<List<FileDtoResponse>> uploadResource(
@@ -83,6 +87,7 @@ public class FileController {
         List<FileDtoResponse> responses = fileService.upload(userId, path, files);
         return ResponseEntity.status(HttpStatus.CREATED).body(responses);
     }
+
     @Operation(summary = "Переместить ресурс")
     @PostMapping("/move")
     public ResponseEntity<FileDtoResponse> moveResource(@RequestParam String from,
@@ -94,10 +99,11 @@ public class FileController {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(response);
     }
+
     @Operation(summary = "Найти ресурс")
     @GetMapping("/search")
-    public ResponseEntity<List<FileDtoResponse>> searchResource (@RequestParam String query,
-                                                                 Authentication authentication) {
+    public ResponseEntity<List<FileDtoResponse>> searchResource(@RequestParam String query,
+                                                                Authentication authentication) {
         Long userId = userService.findByUsername(authentication.getName()).getId();
         List<FileDtoResponse> responses = fileService.search(userId, query);
         return ResponseEntity.ok()
